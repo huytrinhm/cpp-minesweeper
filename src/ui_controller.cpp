@@ -560,9 +560,14 @@ void startGameMenu(int& rows, int& cols, int& bombCount) {
     sprintf(str_bomb, "Number of Mines:  \x1b[%dm< %*s%2d%*s >\x1b[27m",
             select == 3 ? 7 : 27, bombCount > 99 ? 0 : 1, "", bombCount,
             bombCount > 999 ? 0 : 1, "");
-    printf("\x1b[%d;%dH%s", menu_r + 2, menu_c + 4, str_rows);
-    printf("\x1b[%d;%dH%s", menu_r + 2 + 2, menu_c + 4, str_cols);
-    printf("\x1b[%d;%dH%s", menu_r + 2 + 2 + 2, menu_c + 4, str_bomb);
+
+    int height_r = menu_r + 2;
+    int width_r = menu_r + 2 + 2;
+    int bomb_r = menu_r + 2 + 2 + 2;
+    int options_c = menu_c + 4;
+    printf("\x1b[%d;%dH%s", height_r, options_c, str_rows);
+    printf("\x1b[%d;%dH%s", width_r, options_c, str_cols);
+    printf("\x1b[%d;%dH%s", bomb_r, options_c, str_bomb);
 
     // FOOTER
     printf("\x1b[%d;1H", height);
@@ -573,6 +578,31 @@ void startGameMenu(int& rows, int& cols, int& bombCount) {
     fflush(stdout);
 
     int keyCode = getInput();
+    int mouse_r, mouse_c, mouse_event;
+    if (getMouseInput(mouse_r, mouse_c, mouse_event)) {
+      if (mouse_event == 0) {
+        if (mouse_r == height_r && mouse_c >= options_c &&
+            mouse_c < options_c + 26)
+          select = 1;
+        else if (mouse_r == width_r && mouse_c >= options_c &&
+                 mouse_c < options_c + 26)
+          select = 2;
+        else if (mouse_r == bomb_r && mouse_c >= options_c &&
+                 mouse_c < options_c + 26)
+          select = 3;
+      } else if (mouse_event == 1 &&
+                 (mouse_c == options_c + 18 || mouse_c == options_c + 25)) {
+        if (mouse_r == height_r)
+          select = 1,
+          keyCode = mouse_c == options_c + 18 ? KEY_LEFT_ARROW : KEY_RIGHT_ARROW;
+        else if (mouse_r == width_r)
+          select = 2,
+          keyCode = mouse_c == options_c + 18 ? KEY_LEFT_ARROW : KEY_RIGHT_ARROW;
+        else if (mouse_r == bomb_r)
+          select = 3,
+          keyCode = mouse_c == options_c + 18 ? KEY_LEFT_ARROW : KEY_RIGHT_ARROW;
+      }
+    }
     if (keyCode == KEY_DOWN_ARROW)
       select = std::min(3, select + 1);
     else if (keyCode == KEY_UP_ARROW)
