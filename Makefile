@@ -1,3 +1,5 @@
+all: minesweeper
+
 minesweeper:
 	mkdir -p build/ && cd src/ && \
 	g++ -Wall -O2 -std=c++17 \
