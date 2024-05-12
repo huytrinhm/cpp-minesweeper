@@ -25,7 +25,7 @@ void initBoard(GameState& state, int rows, int cols, int bombCount) {
 }
 
 void genBoard(GameState& state, int r, int c) {
-  int bombCandidate[state.rows * state.cols - 1];
+  int* bombCandidate = new int[state.rows * state.cols - 1];
 
   for (int i = 0, p = 0; i < state.rows * state.cols; i++)
     if (i != (r - 1) * state.cols + c - 1)
